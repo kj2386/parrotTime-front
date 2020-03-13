@@ -22,45 +22,48 @@ class Home extends React.Component {
             <Link to="/">
               <Menu.Item header>Home</Menu.Item>
             </Link>
-            {authenticated ? (
-              <Menu.Item header onClick={() => this.props.logout()}>
-                Logout
-              </Menu.Item>
-            ) : (
-              <React.Fragment>
-                <Link to="/login">
-                  <Menu.Item header>Login</Menu.Item>
-                </Link>
-                <Link to="/signup">
-                  <Menu.Item header>Signup</Menu.Item>
-                </Link>
-              </React.Fragment>
-            )}
-            <Menu.Menu inverted position="right">
-              <Dropdown
-                icon="cart"
-                loading={loading}
-                text={`${cart !== null ? cart.order_parrots.length : 0} `}
-                pointing
-                className="link item"
-              >
-                <Dropdown.Menu>
-                  {cart &&
-                    cart.order_parrots.map(order_parrot => {
-                      return (
-                        <Dropdown.Item key={order_parrot.id}>
-                          {order_parrot.quantity} x {order_parrot.parrot}
-                        </Dropdown.Item>
-                      );
-                    })}
-                  {cart && cart.order_parrots.length < 1 ? (
-                    <Dropdown.Item>No parrots in your cart</Dropdown.Item>
-                  ) : null}
 
-                  <Dropdown.Divider />
-                  <Dropdown.Item icon="arrow right" text="Checkout" />
-                </Dropdown.Menu>
-              </Dropdown>
+            <Menu.Menu inverted position="right">
+              {authenticated ? (
+                <React.Fragment>
+                  <Dropdown
+                    icon="cart"
+                    loading={loading}
+                    text={`${cart !== null ? cart.order_parrots.length : 0} `}
+                    pointing
+                    className="link item"
+                  >
+                    <Dropdown.Menu>
+                      {cart &&
+                        cart.order_parrots.map(order_parrot => {
+                          return (
+                            <Dropdown.Item key={order_parrot.id}>
+                              {order_parrot.quantity} x {order_parrot.parrot}
+                            </Dropdown.Item>
+                          );
+                        })}
+                      {cart && cart.order_parrots.length < 1 ? (
+                        <Dropdown.Item>No parrots in your cart</Dropdown.Item>
+                      ) : null}
+
+                      <Dropdown.Divider />
+                      <Dropdown.Item icon="arrow right" text="Checkout" />
+                    </Dropdown.Menu>
+                  </Dropdown>
+                  <Menu.Item header onClick={() => this.props.logout()}>
+                    Logout
+                  </Menu.Item>
+                </React.Fragment>
+              ) : (
+                <React.Fragment>
+                  <Link to="/login">
+                    <Menu.Item header>Login</Menu.Item>
+                  </Link>
+                  <Link to="/signup">
+                    <Menu.Item header>Signup</Menu.Item>
+                  </Link>
+                </React.Fragment>
+              )}
             </Menu.Menu>
           </Container>
         </Menu>
