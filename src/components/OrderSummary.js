@@ -1,14 +1,7 @@
 import React from 'react';
 import { authAxios } from '../utils';
-import {
-  Button,
-  Container,
-  Header,
-  Icon,
-  Label,
-  Menu,
-  Table
-} from 'semantic-ui-react';
+import { Button, Container, Header, Table } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 import { orderSummaryUrl } from '../constants';
 
 class OrderSummary extends React.Component {
@@ -75,7 +68,9 @@ class OrderSummary extends React.Component {
             <Table.Footer>
               <Table.Row>
                 <Table.HeaderCell colSpan="5" textAlign="right">
-                  <Button color="yellow">Checkout</Button>
+                  <Link to='/checkout'>
+                    <Button color="yellow">Checkout</Button>
+                  </Link>
                 </Table.HeaderCell>
               </Table.Row>
             </Table.Footer>
