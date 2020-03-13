@@ -23,7 +23,7 @@ class Home extends React.Component {
               <Menu.Item header>Home</Menu.Item>
             </Link>
 
-            <Menu.Menu inverted position="right">
+            <Menu.Menu  position="right">
               {authenticated ? (
                 <React.Fragment>
                   <Dropdown
@@ -47,7 +47,7 @@ class Home extends React.Component {
                       ) : null}
 
                       <Dropdown.Divider />
-                      <Dropdown.Item icon="arrow right" text="Checkout" />
+                      <Dropdown.Item icon="arrow right" text="Checkout" onClick={() => this.props.history.push('/order-summary')} />
                     </Dropdown.Menu>
                   </Dropdown>
                   <Menu.Item header onClick={() => this.props.logout()}>

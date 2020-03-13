@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Button,
   Card,
@@ -13,6 +14,7 @@ import {
 import axios from 'axios';
 import { parrotListUrl, addToCartUrl } from '../constants';
 import { authAxios } from '../utils';
+import { fetchCart } from '../store/actions/cart';
 
 class ParrotList extends React.Component {
   state = {
@@ -38,6 +40,7 @@ class ParrotList extends React.Component {
     authAxios
       .post(addToCartUrl, { slug })
       .then(res => {
+        this.props.fetchCart();
         this.setState({ loading: false });
       })
       .catch(error => {
@@ -97,4 +100,13 @@ class ParrotList extends React.Component {
   }
 }
 
-export default ParrotList;
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchCart: () => dispatch(fetchCart())
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(ParrotList);
