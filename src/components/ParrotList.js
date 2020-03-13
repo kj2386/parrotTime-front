@@ -11,8 +11,8 @@ import {
   Segment
 } from 'semantic-ui-react';
 import axios from 'axios';
-import { parrotListUrl } from '../constants';
-
+import { parrotListUrl, addToCartUrl } from '../constants';
+import { authAxios } from '../utils';
 
 class ParrotList extends React.Component {
   state = {
@@ -32,6 +32,18 @@ class ParrotList extends React.Component {
         this.setState({ error: error, loading: false });
       });
   }
+
+  handleAddToCart = slug => {
+    this.setState({ loading: true });
+    authAxios
+      .post(addToCartUrl, { slug })
+      .then(res => {
+        this.setState({ loading: false });
+      })
+      .catch(error => {
+        this.setState({ error: error, loading: false });
+      });
+  };
 
   render() {
     const { data, error, loading } = this.state;
@@ -66,7 +78,12 @@ class ParrotList extends React.Component {
                   <Card.Description>${parrot.price}</Card.Description>
                 </Card.Content>
                 <Card.Content extra>
-                  <Button primary icon labelPosition="right">
+                  <Button
+                    primary
+                    icon
+                    labelPosition="right"
+                    onClick={() => this.handleAddToCart(parrot.slug)}
+                  >
                     Add to Cart
                     <Icon name="cart plus" />
                   </Button>
