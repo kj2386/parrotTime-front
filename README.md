@@ -4,7 +4,7 @@
 
 Parrot Time is an Ecommerce app that that sells everyone's favorite Party Parrot! It uses Stripe to process payments. Currently setup to take in a dummy card to send back if payment was successful.
 
-![alt text](realiv)
+
 
 ## List of Features 
 
