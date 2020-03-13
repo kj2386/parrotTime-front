@@ -5,7 +5,6 @@ import BaseRouter from './routes';
 import * as actions from './store/actions/auth';
 import 'semantic-ui-css/semantic.min.css';
 
-
 class App extends Component {
   componentDidMount() {
     this.props.onTryAutoSignup();
@@ -14,9 +13,7 @@ class App extends Component {
   render() {
     return (
       <Router>
-        
-          <BaseRouter />
-       
+        <BaseRouter />
       </Router>
     );
   }

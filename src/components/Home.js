@@ -1,17 +1,19 @@
 import React from 'react';
-import {
-  Container,
-  Header,
-  Menu,
-} from 'semantic-ui-react';
+import { Container, Dropdown, Header, Menu } from 'semantic-ui-react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logout } from '../store/actions/auth';
+import { fetchCart } from '../store/actions/cart';
 import ParrotList from './ParrotList';
 
 class Home extends React.Component {
+  componentDidMount() {
+    this.props.fetchCart();
+  }
+
   render() {
-    const { authenticated } = this.props;
+    const { authenticated, cart, loading } = this.props;
+    console.log(cart);
     return (
       <div>
         <Header size="huge">Parrot Time</Header>
@@ -34,6 +36,32 @@ class Home extends React.Component {
                 </Link>
               </React.Fragment>
             )}
+            <Menu.Menu inverted position="right">
+              <Dropdown
+                icon="cart"
+                loading={loading}
+                text={`${cart !== null ? cart.order_parrots.length : 0} `}
+                pointing
+                className="link item"
+              >
+                <Dropdown.Menu>
+                  {cart &&
+                    cart.order_parrots.map(order_parrot => {
+                      return (
+                        <Dropdown.Item key={order_parrot.id}>
+                          {order_parrot.quantity} x {order_parrot.parrot}
+                        </Dropdown.Item>
+                      );
+                    })}
+                  {cart && cart.order_parrots.length < 1 ? (
+                    <Dropdown.Item>No parrots in your cart</Dropdown.Item>
+                  ) : null}
+
+                  <Dropdown.Divider />
+                  <Dropdown.Item icon="arrow right" text="Checkout" />
+                </Dropdown.Menu>
+              </Dropdown>
+            </Menu.Menu>
           </Container>
         </Menu>
         <ParrotList />
@@ -46,13 +74,16 @@ class Home extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    authenticated: state.auth.token !== null
+    authenticated: state.auth.token !== null,
+    cart: state.cart.shoppingCart,
+    loading: state.cart.loading
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    logout: () => dispatch(logout())
+    logout: () => dispatch(logout()),
+    fetchCart: () => dispatch(fetchCart())
   };
 };
 
