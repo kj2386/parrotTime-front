@@ -8,9 +8,9 @@ import Home from './components/Home';
 
 const BaseRouter = () => (
   <Hoc>
-    <Route path="/login" component={Login} />
-    <Route path="/signup" component={Signup} />
-    <Route exact path="/" component={Home} />
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
+      <Route exact path="/" component={Home} />
   </Hoc>
 );
 

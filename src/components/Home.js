@@ -1,25 +1,21 @@
 import React from 'react';
 import {
   Container,
-  Divider,
-  Dropdown,
-  Grid,
   Header,
-  Image,
-  List,
   Menu,
-  Segment
 } from 'semantic-ui-react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logout } from '../store/actions/auth';
+import ParrotList from './ParrotList';
 
 class Home extends React.Component {
   render() {
     const { authenticated } = this.props;
     return (
       <div>
-        <Menu fixed="top" inverted>
+        <Header size="huge">Parrot Time</Header>
+        <Menu inverted>
           <Container>
             <Link to="/">
               <Menu.Item header>Home</Menu.Item>
@@ -40,6 +36,7 @@ class Home extends React.Component {
             )}
           </Container>
         </Menu>
+        <ParrotList />
 
         {this.props.children}
       </div>

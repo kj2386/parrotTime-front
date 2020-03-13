@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import BaseRouter from './routes';
 import * as actions from './store/actions/auth';
 import 'semantic-ui-css/semantic.min.css';
-import Home from './components/Home';
+
 
 class App extends Component {
   componentDidMount() {
@@ -14,9 +14,9 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <Home {...this.props}>
+        
           <BaseRouter />
-        </Home>
+       
       </Router>
     );
   }
