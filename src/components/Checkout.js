@@ -5,9 +5,10 @@ import {
   Elements,
   StripeProvider
 } from 'react-stripe-elements';
-import { Button, Container, Message } from 'semantic-ui-react';
+import { Button, Container, Header, Message } from 'semantic-ui-react';
 import { authAxios } from '../utils';
 import { checkoutUrl } from '../constants';
+import Nav from './Nav';
 
 class Checkout extends Component {
   state = {
@@ -43,6 +44,7 @@ class Checkout extends Component {
     const { error, loading, success } = this.state;
     return (
       <div>
+        <Nav />
         {error && (
           <Message negative>
             <Message.Header>Your Payment Was Unsuccessful</Message.Header>
@@ -79,6 +81,7 @@ const WrappedForm = () => (
   <Container text>
     <StripeProvider apiKey="pk_test_qd1iFYV4BUKn4UMlOdYH2dg000muvejSMt">
       <div>
+        <Header size="huge">Parrot Time</Header>
         <h1>Complete Your Order</h1>
         <Elements>
           <InjectedForm />

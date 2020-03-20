@@ -3,6 +3,7 @@ import { authAxios } from '../utils';
 import { Button, Container, Header, Table } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { orderSummaryUrl } from '../constants';
+import Nav from './Nav';
 
 class OrderSummary extends React.Component {
   state = {
@@ -30,7 +31,9 @@ class OrderSummary extends React.Component {
     const { data, error, loading } = this.state;
     return (
       <Container>
+        <Header size="huge">Parrot Time</Header>
         <Header as="h3">Order Summary</Header>
+        <Nav />
         {data && (
           <Table celled>
             <Table.Header>
@@ -68,7 +71,7 @@ class OrderSummary extends React.Component {
             <Table.Footer>
               <Table.Row>
                 <Table.HeaderCell colSpan="5" textAlign="right">
-                  <Link to='/checkout'>
+                  <Link to="/checkout">
                     <Button color="yellow">Checkout</Button>
                   </Link>
                 </Table.HeaderCell>
