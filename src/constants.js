@@ -4,3 +4,4 @@ export const parrotListUrl = `${localhost}/parrots`;
 export const addToCartUrl = `${localhost}/add-to-cart/`;
 export const orderSummaryUrl = `${localhost}/order-summary/`;
 export const checkoutUrl = `${localhost}/checkout/`;
+export const addressListUrl = `${localhost}/addresses/`;
