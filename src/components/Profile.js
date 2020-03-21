@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import {
   Button,
   Card,
@@ -15,119 +17,40 @@ import {
   Segment
 } from 'semantic-ui-react';
 import Nav from './Nav';
-import AddressForm from './AddressForm'
-import { addressListUrl, userIdUrl } from '../constants';
+import AddressForm from './AddressForm';
+import { addressListUrl, userIdUrl, addressDeleteUrl } from '../constants';
 import { authAxios } from '../utils';
 
-// class AddressForm extends React.Component {
-//   state = {
-//     error: null,
-//     loading: false,
-//     formData: { default: false },
-//     saving: false,
-//     success: false
-//   };
-//   handleCreateAddress = e => {
-//     this.setState({ saving: true });
-//     e.preventDefault();
-//     const { activeItem, formData, userId } = this.state;
-//     authAxios
-//       .post(addressCreateUrl, {
-//         ...formData,
-//         user: userId,
-//         address_type: activeItem === 'billingAddress' ? 'B' : 'S'
-//       })
-//       .then(res => {
-//         this.setState({ saving: false, success: true });
-//       })
-//       .catch(err => {
-//         this.setState({ error: err });
-//       });
-//   };
-
-//   handleToggleDefault = () => {
-//     const { formData } = this.state;
-//     const updatedFormData = {
-//       ...formData,
-//       default: !formData.default
-//     };
-//     this.setState({
-//       formData: updatedFormData
-//     });
-//   };
-
-//   handleChange = e => {
-//     const { formData } = this.state;
-//     const updatedFormData = {
-//       ...formData,
-//       [e.target.name]: e.target.value
-//     };
-//     this.setState({
-//       formData: updatedFormData
-//     });
-//   };
-//   render() {
-//     const { success, error, saving } = this.state;
-//     return (
-//       <Form onSubmit={this.handleCreateAddress} success={success} error={error}>
-//         <Form.Input
-//           required
-//           name="street_address"
-//           placeholder="Street Address"
-//           onChange={this.handleChange}
-//         />
-//         <Form.Input
-//           required
-//           name="city"
-//           placeholder="City"
-//           onChange={this.handleChange}
-//         />
-//         <Form.Input
-//           required
-//           name="state"
-//           placeholder="State"
-//           onChange={this.handleChange}
-//         />
-//         <Form.Input
-//           required
-//           name="zip"
-//           placeholder="Zip"
-//           onChange={this.handleChange}
-//         />
-//         <Form.Checkbox
-//           name="default"
-//           label="Make this the default address"
-//           onChange={this.handleToggleDefault}
-//         />
-//         {success && (
-//           <Message success header="Success!" content="Your address was saved" />
-//         )}
-//         {error && (
-//           <Message
-//             error
-//             header="There was an error"
-//             content={JSON.stringify(error)}
-//           />
-//         )}
-//         <Form.Button disabled={saving} loading={saving} primary>
-//           Save
-//         </Form.Button>
-//       </Form>
-//     );
-//   }
-// }
+const CREATE_FORM = 'CREATE_FORM';
+const UPDATE_FORM = 'UPDATE_FORM';
 
 class Profile extends React.Component {
   state = {
     activeItem: 'billingAddress',
     addresses: [],
-    userId: null
+    userId: null,
+    selectedAddress: null
   };
 
   componentDidMount() {
     this.handleFetchAddresses();
     this.handleFetchUserId();
   }
+
+  handleDeleteAddress = addressId => {
+    authAxios
+      .delete(addressDeleteUrl(addressId))
+      .then(res => {
+        this.handleCallback();
+      })
+      .catch(err => {
+        this.setState({ error: err });
+      });
+  };
+
+  handleSelectAddress = address => {
+    this.setState({ selectedAddress: address });
+  };
 
   handleFetchUserId = () => {
     authAxios
@@ -159,8 +82,25 @@ class Profile extends React.Component {
       });
   };
 
+  handleCallback = () => {
+    this.handleFetchAddresses();
+    this.setState({ selectedAddress: null });
+  };
+
   render() {
-    const { activeItem, error, loading, addresses } = this.state;
+    const {
+      activeItem,
+      error,
+      loading,
+      addresses,
+      selectedAddress,
+      userId
+    } = this.state;
+
+    const { isAuthenticated } = this.props;
+    if (!isAuthenticated) {
+      return <Redirect to="/login" />;
+    }
     return (
       <div>
         <Header size="huge">Parrot Time</Header>
@@ -228,15 +168,43 @@ class Profile extends React.Component {
                         <Card.Description>{a.zip}</Card.Description>
                       </Card.Content>
                       <Card.Content extra>
-                        <Button color="yellow">Update</Button>
-                        <Button color="red">Delete</Button>
+                        <Button
+                          color="yellow"
+                          onClick={() => this.handleSelectAddress(a)}
+                        >
+                          Update
+                        </Button>
+                        <Button
+                          onClick={() => this.handleDeleteAddress(a.id)}
+                          color="red"
+                        >
+                          Delete
+                        </Button>
                       </Card.Content>
                     </Card>
                   );
                 })}
               </Card.Group>
               {addresses.length > 0 ? <Divider /> : null}
-              <AddressForm addresses={addresses} />
+              
+              {selectedAddress === null ? (
+                <AddressForm
+                  activeItem={activeItem}
+                  userId={userId}
+                  formType={CREATE_FORM}
+                  callback={this.handleCallback}
+                />
+              ) : null}
+
+              {selectedAddress && (
+                <AddressForm
+                  activeItem={activeItem}
+                  userId={userId}
+                  address={selectedAddress}
+                  formType={UPDATE_FORM}
+                  callback={this.handleCallback}
+                />
+              )}
             </GridColumn>
           </Grid.Row>
         </Grid>
@@ -245,4 +213,10 @@ class Profile extends React.Component {
   }
 }
 
-export default Profile;
+const mapStateToProps = state => {
+  return {
+    isAuthenticated: state.auth.token !== null
+  };
+};
+
+export default connect(mapStateToProps)(Profile);
