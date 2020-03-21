@@ -10,3 +10,4 @@ export const addressCreateUrl = `${localhost}/addresses/create/`;
 export const addressUpdateUrl = id => `${localhost}/addresses/${id}/update/`;
 export const addressDeleteUrl = id => `${localhost}/addresses/${id}/delete/`;
 export const userIdUrl = `${localhost}/user-id/`;
+export const orderItemDeleteUrl = id => `${localhost}/order-items/${id}/delete/`;

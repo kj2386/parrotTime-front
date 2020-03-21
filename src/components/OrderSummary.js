@@ -4,6 +4,7 @@ import {
   Button,
   Dimmer,
   Header,
+  Icon,
   Image,
   Loader,
   Segment,
@@ -11,7 +12,7 @@ import {
   Message
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { orderSummaryUrl } from '../constants';
+import { orderSummaryUrl, orderItemDeleteUrl } from '../constants';
 import Nav from './Nav';
 
 class OrderSummary extends React.Component {
@@ -41,6 +42,17 @@ class OrderSummary extends React.Component {
         } else {
           this.setState({ error: error, loading: false });
         }
+      });
+  };
+
+  handleRemoveItem = itemId => {
+    authAxios
+      .delete(orderItemDeleteUrl(itemId))
+      .then(res => {
+        this.handleFetchOrder();
+      })
+      .catch(error => {
+        this.setState({ error: error });
       });
   };
 
@@ -86,7 +98,15 @@ class OrderSummary extends React.Component {
                     <Table.Cell>{order_parrot.parrot}</Table.Cell>
                     <Table.Cell>${order_parrot.parrot_obj.price}</Table.Cell>
                     <Table.Cell>{order_parrot.quantity}</Table.Cell>
-                    <Table.Cell>${order_parrot.quantity}.00</Table.Cell>
+                    <Table.Cell>
+                      ${order_parrot.quantity}.00
+                      <Icon
+                        name="trash"
+                        color="red"
+                        style={{ float: 'right', cursor: 'pointer' }}
+                        onClick={() => this.handleRemoveItem(order_parrot.id)}
+                      />
+                    </Table.Cell>
                   </Table.Row>
                 );
               })}
