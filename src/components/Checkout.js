@@ -5,10 +5,11 @@ import {
   Elements,
   StripeProvider
 } from 'react-stripe-elements';
-import { Button, Container, Header, Message } from 'semantic-ui-react';
+import { Button,  Divider, Header, Message, Segment } from 'semantic-ui-react';
 import { authAxios } from '../utils';
 import { checkoutUrl } from '../constants';
 import Nav from './Nav';
+import OrderPreview from './OrderPreview';
 
 class Checkout extends Component {
   state = {
@@ -59,7 +60,9 @@ class Checkout extends Component {
             </p>
           </Message>
         )}
-        <p>Would you like to complete the purchase?</p>
+        <OrderPreview />
+        <Divider />
+        <Header>Would you like to complete the purchase?</Header>
         <CardElement />
         <Button
           loading={loading}
@@ -78,7 +81,7 @@ class Checkout extends Component {
 const InjectedForm = injectStripe(Checkout);
 
 const WrappedForm = () => (
-  <Container text>
+  <Segment >
     <StripeProvider apiKey="pk_test_qd1iFYV4BUKn4UMlOdYH2dg000muvejSMt">
       <div>
         <Header size="huge">Parrot Time</Header>
@@ -88,7 +91,7 @@ const WrappedForm = () => (
         </Elements>
       </div>
     </StripeProvider>
-  </Container>
+  </Segment>
 );
 
 export default WrappedForm;

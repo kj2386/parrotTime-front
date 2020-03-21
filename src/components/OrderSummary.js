@@ -1,6 +1,15 @@
 import React from 'react';
 import { authAxios } from '../utils';
-import { Button, Container, Header, Table } from 'semantic-ui-react';
+import {
+  Button,
+  Dimmer,
+  Header,
+  Image,
+  Loader,
+  Segment,
+  Table,
+  Message
+} from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { orderSummaryUrl } from '../constants';
 import Nav from './Nav';
@@ -11,6 +20,7 @@ class OrderSummary extends React.Component {
     error: null,
     loading: false
   };
+
   componentDidMount() {
     this.handleFetchOrder();
   }
@@ -23,17 +33,39 @@ class OrderSummary extends React.Component {
         this.setState({ data: res.data, loading: false });
       })
       .catch(error => {
-        this.setState({ error: error, loading: false });
+        if (error.response.status === 404) {
+          this.setState({
+            error: 'You currently do not have an order',
+            loading: false
+          });
+        } else {
+          this.setState({ error: error, loading: false });
+        }
       });
   };
 
   render() {
     const { data, error, loading } = this.state;
     return (
-      <Container>
+      <Segment>
         <Header size="huge">Parrot Time</Header>
         <Header as="h3">Order Summary</Header>
         <Nav />
+        {error && (
+          <Message
+            error
+            header="There was an error"
+            content={JSON.stringify(error)}
+          />
+        )}
+        {loading && (
+          <Segment>
+            <Dimmer active inverted>
+              <Loader inverted>Loading</Loader>
+            </Dimmer>
+            <Image src="/images/wireframe/short-paragraph.png" />
+          </Segment>
+        )}
         {data && (
           <Table celled>
             <Table.Header>
@@ -63,7 +95,7 @@ class OrderSummary extends React.Component {
                 <Table.Cell />
                 <Table.Cell />
                 <Table.Cell colSpan="2" textAlign="center">
-                  Total: $6.00
+                  Total: ${data.total}.00
                 </Table.Cell>
               </Table.Row>
             </Table.Body>
@@ -79,7 +111,7 @@ class OrderSummary extends React.Component {
             </Table.Footer>
           </Table>
         )}
-      </Container>
+      </Segment>
     );
   }
 }

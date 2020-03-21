@@ -1,39 +1,156 @@
 import React from 'react';
 import {
+  Button,
+  Card,
   Dimmer,
   Divider,
-  Form,
   Grid,
+  GridColumn,
   Header,
   Image,
-  GridColumn,
+  Label,
   Loader,
   Menu,
   Message,
   Segment
 } from 'semantic-ui-react';
 import Nav from './Nav';
-import { addressListUrl } from '../constants';
+import AddressForm from './AddressForm'
+import { addressListUrl, userIdUrl } from '../constants';
 import { authAxios } from '../utils';
+
+// class AddressForm extends React.Component {
+//   state = {
+//     error: null,
+//     loading: false,
+//     formData: { default: false },
+//     saving: false,
+//     success: false
+//   };
+//   handleCreateAddress = e => {
+//     this.setState({ saving: true });
+//     e.preventDefault();
+//     const { activeItem, formData, userId } = this.state;
+//     authAxios
+//       .post(addressCreateUrl, {
+//         ...formData,
+//         user: userId,
+//         address_type: activeItem === 'billingAddress' ? 'B' : 'S'
+//       })
+//       .then(res => {
+//         this.setState({ saving: false, success: true });
+//       })
+//       .catch(err => {
+//         this.setState({ error: err });
+//       });
+//   };
+
+//   handleToggleDefault = () => {
+//     const { formData } = this.state;
+//     const updatedFormData = {
+//       ...formData,
+//       default: !formData.default
+//     };
+//     this.setState({
+//       formData: updatedFormData
+//     });
+//   };
+
+//   handleChange = e => {
+//     const { formData } = this.state;
+//     const updatedFormData = {
+//       ...formData,
+//       [e.target.name]: e.target.value
+//     };
+//     this.setState({
+//       formData: updatedFormData
+//     });
+//   };
+//   render() {
+//     const { success, error, saving } = this.state;
+//     return (
+//       <Form onSubmit={this.handleCreateAddress} success={success} error={error}>
+//         <Form.Input
+//           required
+//           name="street_address"
+//           placeholder="Street Address"
+//           onChange={this.handleChange}
+//         />
+//         <Form.Input
+//           required
+//           name="city"
+//           placeholder="City"
+//           onChange={this.handleChange}
+//         />
+//         <Form.Input
+//           required
+//           name="state"
+//           placeholder="State"
+//           onChange={this.handleChange}
+//         />
+//         <Form.Input
+//           required
+//           name="zip"
+//           placeholder="Zip"
+//           onChange={this.handleChange}
+//         />
+//         <Form.Checkbox
+//           name="default"
+//           label="Make this the default address"
+//           onChange={this.handleToggleDefault}
+//         />
+//         {success && (
+//           <Message success header="Success!" content="Your address was saved" />
+//         )}
+//         {error && (
+//           <Message
+//             error
+//             header="There was an error"
+//             content={JSON.stringify(error)}
+//           />
+//         )}
+//         <Form.Button disabled={saving} loading={saving} primary>
+//           Save
+//         </Form.Button>
+//       </Form>
+//     );
+//   }
+// }
 
 class Profile extends React.Component {
   state = {
     activeItem: 'billingAddress',
-    error: null,
-    loading: false,
-    addresses: []
+    addresses: [],
+    userId: null
   };
 
   componentDidMount() {
-      this.handleFetchAddresses();
+    this.handleFetchAddresses();
+    this.handleFetchUserId();
   }
 
-  handleItemClick = name => this.setState({ activeItem: name });
+  handleFetchUserId = () => {
+    authAxios
+      .get(userIdUrl)
+      .then(res => {
+        this.setState({ userId: res.data.userId });
+      })
+      .catch(err => {
+        this.setState({ error: err });
+      });
+  };
+
+  handleItemClick = name => {
+    this.setState({ activeItem: name }, () => {
+      this.handleFetchAddresses();
+    });
+  };
 
   handleFetchAddresses = () => {
     this.setState({ loading: true });
+    const { activeItem } = this.state;
     authAxios
-      .get(addressListUrl)
+      .get(addressListUrl(activeItem === 'billingAddress' ? 'B' : 'S'))
       .then(res => {
         this.setState({ addresses: res.data, loading: false });
       })
@@ -66,9 +183,6 @@ class Profile extends React.Component {
                   <Image src="/images/wireframe/short-paragraph.png" />
                 </Segment>
               )}
-              {addresses.map(a => {
-                return <div>{a.streetAddress}</div>;
-              })}
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
@@ -84,6 +198,11 @@ class Profile extends React.Component {
                   active={activeItem === 'shippingAddress'}
                   onClick={() => this.handleItemClick('shippingAddress')}
                 />
+                <Menu.Item
+                  name="Payment History"
+                  active={activeItem === 'paymentHistory'}
+                  onClick={() => this.handleItemClick('paymentHistory')}
+                />
               </Menu>
             </GridColumn>
             <GridColumn width={10}>
@@ -91,20 +210,33 @@ class Profile extends React.Component {
                 activeItem === 'billingAddress' ? 'billing' : 'shipping'
               } address`}</Header>
               <Divider />
+              <Card.Group>
+                {addresses.map(a => {
+                  return (
+                    <Card key={a.id}>
+                      <Card.Content>
+                        {a.default && (
+                          <Label as="a" color="blue" ribbon="right">
+                            Default
+                          </Label>
+                        )}
 
-              <Form>
-                <Form.Input name="streetAdress" placeholder="Street Address" />
-                <Form.Input name="city" placeholder="City" />
-                <Form.Input name="state" placeholder="State" />
-                <Form.Input name="zip" placeholder="Zip" />
-                <Form.Checkbox
-                  name="default"
-                  label="Make this the default address"
-                />
-                <Form.Button primary>Save</Form.Button>
-              </Form>
-
-              <p>physical address form</p>
+                        <Card.Header>{a.street_address}</Card.Header>
+                        <Card.Meta>
+                          {a.city}, {a.state}
+                        </Card.Meta>
+                        <Card.Description>{a.zip}</Card.Description>
+                      </Card.Content>
+                      <Card.Content extra>
+                        <Button color="yellow">Update</Button>
+                        <Button color="red">Delete</Button>
+                      </Card.Content>
+                    </Card>
+                  );
+                })}
+              </Card.Group>
+              {addresses.length > 0 ? <Divider /> : null}
+              <AddressForm addresses={addresses} />
             </GridColumn>
           </Grid.Row>
         </Grid>
