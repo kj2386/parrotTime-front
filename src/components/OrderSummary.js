@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import { authAxios } from '../utils';
 import {
   Button,
@@ -11,8 +13,13 @@ import {
   Table,
   Message
 } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
-import { orderSummaryUrl, orderItemDeleteUrl } from '../constants';
+import { Link, Redirect } from 'react-router-dom';
+import {
+  orderSummaryUrl,
+  orderItemDeleteUrl,
+  addToCartUrl,
+  orderItemUpdateQuantityUrl
+} from '../constants';
 import Nav from './Nav';
 
 class OrderSummary extends React.Component {
@@ -45,6 +52,30 @@ class OrderSummary extends React.Component {
       });
   };
 
+  handleAddToCart = slug => {
+    this.setState({ loading: true });
+    authAxios
+      .post(addToCartUrl, { slug })
+      .then(res => {
+        this.handleFetchOrder();
+        this.setState({ loading: false });
+      })
+      .catch(error => {
+        this.setState({ error: error, loading: false });
+      });
+  };
+
+  handleRemoveQuantityFromCart = slug => {
+    authAxios
+      .post(orderItemUpdateQuantityUrl, { slug })
+      .then(res => {
+        this.handleFetchOrder();
+      })
+      .catch(error => {
+        this.setState({ error: error });
+      });
+  };
+
   handleRemoveItem = itemId => {
     authAxios
       .delete(orderItemDeleteUrl(itemId))
@@ -58,6 +89,10 @@ class OrderSummary extends React.Component {
 
   render() {
     const { data, error, loading } = this.state;
+    const { isAuthenticated } = this.props;
+    if (!isAuthenticated) {
+      return <Redirect to="/login" />;
+    }
     return (
       <Segment>
         <Header size="huge">Parrot Time</Header>
@@ -97,7 +132,25 @@ class OrderSummary extends React.Component {
                     <Table.Cell>{i + 1}</Table.Cell>
                     <Table.Cell>{order_parrot.parrot}</Table.Cell>
                     <Table.Cell>${order_parrot.parrot_obj.price}</Table.Cell>
-                    <Table.Cell>{order_parrot.quantity}</Table.Cell>
+                    <Table.Cell textAlign="center">
+                      <Icon
+                        name="plus"
+                        style={{ float: 'left', cursor: 'pointer' }}
+                        onClick={() =>
+                          this.handleAddToCart(order_parrot.parrot_obj.slug)
+                        }
+                      />
+                      {order_parrot.quantity}
+                      <Icon
+                        name="minus"
+                        style={{ float: 'right', cursor: 'pointer' }}
+                        onClick={() =>
+                          this.handleRemoveQuantityFromCart(
+                            order_parrot.parrot_obj.slug
+                          )
+                        }
+                      />
+                    </Table.Cell>
                     <Table.Cell>
                       ${order_parrot.quantity}.00
                       <Icon
@@ -136,4 +189,10 @@ class OrderSummary extends React.Component {
   }
 }
 
-export default OrderSummary;
+const mapStateToProps = state => {
+  return {
+    isAuthenticated: state.auth.token !== null
+  };
+};
+
+export default connect(mapStateToProps)(OrderSummary);
