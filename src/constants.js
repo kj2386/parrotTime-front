@@ -13,3 +13,4 @@ export const userIdUrl = `${localhost}/user-id/`;
 export const orderItemDeleteUrl = id =>
   `${localhost}/order-items/${id}/delete/`;
 export const orderItemUpdateQuantityUrl = `${localhost}/order-item/update-quantity/`;
+export const paymentListUrl = `${localhost}/payments/`;

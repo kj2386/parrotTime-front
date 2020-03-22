@@ -25,7 +25,7 @@ class AddressForm extends React.Component {
 
   componentDidMount() {
     const { address, formType } = this.props;
-    console.log(address);
+
     if (formType === UPDATE_FORM) {
       this.setState({ formData: address });
     }
