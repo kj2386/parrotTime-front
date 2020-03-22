@@ -1,5 +1,5 @@
 const localhost =
-  'https://parrottime-back-app.herokuapp.com/';
+  'https://parrottime-back-app.herokuapp.com';
 
 export const parrotListUrl = `${localhost}/parrots`;
 export const addToCartUrl = `${localhost}/add-to-cart/`;
